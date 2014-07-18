@@ -38,8 +38,13 @@ var gameState = {
 		});
 		score.anchor.setTo(0.5, 0);
 		var key = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-		key.onDown.add(function(key) {
-			if (isGameOver == false) {
+		key.onDown.add(this.keyDownFunction, this);
+		
+		game.input.touch.touchStartCallback = this.keyDownFunction;
+	},
+	
+	keyDownFunction: function(key) {
+		if (isGameOver == false) {
 				bird.body.velocity.y = -500;
 				bird.loadTexture('bird_3', 0);
 				clearTimeout(birdChangeTimer);
@@ -47,14 +52,9 @@ var gameState = {
 					bird.loadTexture('bird_1', 0);
 				}, 200);
 			}
-
-		}, this);
-
 	},
 
 	update : function() {
-
-		//console.log(bird.body.position.x);
 
 		this.physics.arcade.collide(bird, pipes, this.hitPipes, null, this);
 		this.physics.arcade.collide(bird, floor, this.hitPipes, null, this);
@@ -237,9 +237,13 @@ var mainMenu = {
 		
 		var key = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 		key.onDown.add(function(key) {
-			clearInterval(birdInterval);
-			game.state.start('main');
+			this.keyDownFunction();
 		}, this);
+		game.input.touch.touchStartCallback = this.keyDownFunction;
+	},
+	keyDownFunction: function(key){
+		clearInterval(birdInterval);
+			game.state.start('main');
 	}
 };
 
