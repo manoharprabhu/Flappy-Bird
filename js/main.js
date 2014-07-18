@@ -1,6 +1,6 @@
 var game = new Phaser.Game(400, 600, Phaser.AUTO, 'game-container');
 var bird, cursors, pipes, isGameOver = false, floor, score, birdChangeTimer;
-var coins, finishLine;
+var coins, finishLine,birdInterval;
 var numberOfPipes = 40;
 var gameState = {
 
@@ -42,7 +42,7 @@ var gameState = {
 				bird.loadTexture('bird_3', 0);
 				clearTimeout(birdChangeTimer);
 				birdChangeTimer = setTimeout(function() {
-					bird.loadTexture('bird_2', 0);
+					bird.loadTexture('bird_1', 0);
 				}, 200);
 			}
 
@@ -58,6 +58,8 @@ var gameState = {
 		this.physics.arcade.collide(bird, floor, this.hitPipes, null, this);
 		this.physics.arcade.collide(bird, coins, this.hitCoin, null, this);
 		this.physics.arcade.collide(bird, finishLine, this.finishGame, null, this);
+		
+		
 
 	},
 
@@ -175,5 +177,70 @@ var gameState = {
 	}
 };
 
+var mainMenu = {
+	
+	
+	preload: function() {
+		this.load.image('bird_2', 'assets/img/bird_2.png');
+		this.load.image('bird_3', 'assets/img/bird_3.png');
+	},
+	create: function() {
+		this.stage.backgroundColor = '#3BB9FF';
+		
+		var menuText,flipBool = true;
+		menuText = this.add.text(200, 100, '0', {
+			font : '38px Helvetica Bold',
+			fill : '#e34e46',
+			align : 'center'
+		});
+		
+		menuText.anchor.set(0.5,0);
+		menuText.text = "Flappy Bird";
+		
+		
+		bird = game.add.sprite(200, 200, 'bird_2');
+		bird.scale.x = 4;
+		bird.scale.y = 4;
+		bird.anchor.set(0.5);
+		
+		
+		menuText = this.add.text(200, 250, '0', {
+			font : '24px Arial Bold',
+			fill : '#fff',
+			align : 'center'
+		});
+		
+		menuText.anchor.set(0.5,0);
+		menuText.text = "Press Space to flap wings.\n Avoid the pipes.";
+		
+		
+		menuText = this.add.text(200, 400, '0', {
+			font : '36px Arial Bold',
+			fill : '#fff',
+			align : 'center'
+		});
+		
+		menuText.anchor.set(0.5,0);
+		menuText.text = "Press Space to start.";
+		
+		birdInterval = setInterval(function(){
+			if(flipBool){
+				bird.loadTexture('bird_3',0);
+			} else {
+				bird.loadTexture('bird_2',0);
+			}
+			flipBool = !flipBool;
+		},200);
+		
+		
+		var key = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+		key.onDown.add(function(key) {
+			clearInterval(birdInterval);
+			game.state.start('main');
+		}, this);
+	}
+};
+
 game.state.add('main', gameState);
-game.state.start('main');
+game.state.add('menu', mainMenu);
+game.state.start('menu');
