@@ -32,7 +32,9 @@ var gameState = {
 		score = this.add.text(185, 40, '0', {
 			font : '45px Arial Bold',
 			fill : '#fff',
-			align : 'center'
+			align : 'center',
+			stroke: '#000000',
+			strokeThickness: 4
 		});
 		score.anchor.setTo(0.5, 0);
 		var key = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
