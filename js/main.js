@@ -1,6 +1,7 @@
 var game = new Phaser.Game(400, 600, Phaser.AUTO, 'game-container');
 var bird, cursors, pipes, isGameOver = false, floor, score,birdChangeTimer;
-var coin;
+var coins,finishLine;
+var numberOfPipes = 2;
 var gameState = {
 
 	preload : function() {
@@ -13,8 +14,7 @@ var gameState = {
 	},
 
 	create : function() {
-		game.stage.backgroundColor = '#3BB9FF';
-		game.time.advancedTiming = true;
+		this.stage.backgroundColor = '#3BB9FF';
 		this.physics.startSystem(Phaser.Physics.ARCADE);
 		this.world.setBounds(0, 0, 400, 600);
 		bird = game.add.sprite(50, 300, 'bird_2');
@@ -24,20 +24,22 @@ var gameState = {
 		this.physics.enable(bird, Phaser.Physics.ARCADE);
 		bird.body.collideWorldBounds = true;
 		bird.body.drag.y = 450;
+		bird.body.mass = 0;
 		this.physics.arcade.gravity.y = 1700;
 		this.createPipes();
 		this.createFloor();
-
-		score =  this.add.text(185, 40, '0', { font: '34px Arial Bold', fill: '#fff' });
-		
+	this.createFinishLine();
+		score =  this.add.text(185, 40, '0', { font: '45px Arial Bold', fill: '#fff' ,align:'center'});
+		score.anchor.setTo(0.5,0);
 		var key = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 		key.onDown.add(function(key) {
 			if (isGameOver == false) {
 				bird.body.velocity.y = -500;
 				bird.loadTexture('bird_3', 0);
+				clearTimeout(birdChangeTimer);
 				birdChangeTimer = setTimeout(function() {
 					bird.loadTexture('bird_2', 0);
-				}, 500);
+				}, 200);
 			}
 
 		}, this);
@@ -50,17 +52,27 @@ var gameState = {
 
 		this.physics.arcade.collide(bird, pipes, this.hitPipes, null, this);
 		this.physics.arcade.collide(bird, floor, this.hitPipes, null, this);
-		this.physics.arcade.collide(bird, coin, this.hitCoin, null, this);
-
+		this.physics.arcade.collide(bird, coins, this.hitCoin, null, this);
+		this.physics.arcade.collide(bird, finishLine, this.finishGame, null, this);
+		
 	},
 
 	createFloor : function() {
-		floor = game.add.tileSprite(0, this.world.bounds.height - game.cache.getImage('pipe_end').height, this.world.bounds.width * 50, game.cache.getImage('pipe_end').height, 'pipe_end');
+		floor = game.add.tileSprite(0, this.world.bounds.height - game.cache.getImage('pipe_end').height,  180*numberOfPipes + 500, game.cache.getImage('pipe_end').height, 'pipe_end');
 		this.physics.enable(floor, Phaser.Physics.ARCADE);
 		floor.enableBody = true;
 		floor.body.immovable = true;
 		floor.body.allowGravity = false;
 		floor.body.velocity.x = -150;
+
+	},
+	createFinishLine: function(){
+		finishLine = game.add.tileSprite(180*numberOfPipes + 500 , 0,game.cache.getImage('pipe_end').height,600,'pipe_end');
+		this.physics.enable(finishLine, Phaser.Physics.ARCADE);
+		finishLine.enableBody = true;
+		finishLine.body.immovable = true;
+		finishLine.body.allowGravity = false;
+		finishLine.body.velocity.x = -150;
 
 	},
 
@@ -70,7 +82,7 @@ var gameState = {
 		this.physics.arcade.gravity.y = 0;
 		isGameOver = true;
 		game.paused = true;
-		game.stage.backgroundColor = '#FF4444';
+		game.stage.backgroundColor = '#FAC5C9';
 		bird.loadTexture('bird_4', 0);
 		clearTimeout(birdChangeTimer);
 		setTimeout(function() {
@@ -80,6 +92,20 @@ var gameState = {
 			isGameOver = false;
 		}, 1000);
 
+	},
+	finishGame:function(){
+		bird.body.velocity.x = 0;
+		bird.body.velocity.y = 0;
+		this.physics.arcade.gravity.y = 0;
+		isGameOver = true;
+		game.paused = true;
+		game.stage.backgroundColor = '#00FF00';
+		score.text = score.text + '\n YOU WIN';
+		setTimeout(function() {
+			this.game.state.start('main');
+			game.paused = false;
+			isGameOver = false;
+		}, 4000);
 	},
 	
 	hitCoin: function(b,c){
@@ -93,12 +119,12 @@ var gameState = {
 		pipes.enableBody = true;
 		pipes.physicsBodyType = Phaser.Physics.ARCADE;
 		
-		coin = game.add.group();
-		coin.enableBody = true;
-		coin.physicsBodyType = Phaser.Physics.ARCADE;
+		coins = game.add.group();
+		coins.enableBody = true;
+		coins.physicsBodyType = Phaser.Physics.ARCADE;
 		
 
-		for ( i = 0; i < 50; i++) {
+		for ( i = 0; i < numberOfPipes; i++) {
 			var height = Math.floor((Math.random() * 15 + 10));
 			this.createPipeSystemAt((i * 180) + 500, height);
 		}
@@ -133,15 +159,15 @@ var gameState = {
 		cap.body.allowGravity = false;
 		cap.body.velocity.x = -150;
 		
-		c = coin.create(positionX, (height * 16) + 30);
-		c.scale.x = 6;
-		c.scale.y = 6;
+		coin = coins.create(positionX, (height * 16) + 30);
+		coin.scale.x = 6;
+		coin.scale.y = 6;
 		
-		c.body.mass = 0;
-		c.body.immovable = false;
-		c.body.checkCollision = false;
-		c.body.allowGravity = false;
-		c.body.velocity.x = -150;
+		coin.body.mass = 0;
+		coin.body.immovable = false;
+		coin.body.checkCollision = false;
+		coin.body.allowGravity = false;
+		coin.body.velocity.x = -150;
 		
 		
 	}
