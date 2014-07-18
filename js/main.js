@@ -1,7 +1,7 @@
 var game = new Phaser.Game(400, 600, Phaser.AUTO, 'game-container');
-var bird, cursors, pipes, isGameOver = false, floor, score,birdChangeTimer;
-var coins,finishLine;
-var numberOfPipes = 2;
+var bird, cursors, pipes, isGameOver = false, floor, score, birdChangeTimer;
+var coins, finishLine;
+var numberOfPipes = 40;
 var gameState = {
 
 	preload : function() {
@@ -28,9 +28,13 @@ var gameState = {
 		this.physics.arcade.gravity.y = 1700;
 		this.createPipes();
 		this.createFloor();
-	this.createFinishLine();
-		score =  this.add.text(185, 40, '0', { font: '45px Arial Bold', fill: '#fff' ,align:'center'});
-		score.anchor.setTo(0.5,0);
+		this.createFinishLine();
+		score = this.add.text(185, 40, '0', {
+			font : '45px Arial Bold',
+			fill : '#fff',
+			align : 'center'
+		});
+		score.anchor.setTo(0.5, 0);
 		var key = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 		key.onDown.add(function(key) {
 			if (isGameOver == false) {
@@ -47,18 +51,18 @@ var gameState = {
 	},
 
 	update : function() {
-		
+
 		//console.log(bird.body.position.x);
 
 		this.physics.arcade.collide(bird, pipes, this.hitPipes, null, this);
 		this.physics.arcade.collide(bird, floor, this.hitPipes, null, this);
 		this.physics.arcade.collide(bird, coins, this.hitCoin, null, this);
 		this.physics.arcade.collide(bird, finishLine, this.finishGame, null, this);
-		
+
 	},
 
 	createFloor : function() {
-		floor = game.add.tileSprite(0, this.world.bounds.height - game.cache.getImage('pipe_end').height,  180*numberOfPipes + 500, game.cache.getImage('pipe_end').height, 'pipe_end');
+		floor = game.add.tileSprite(0, this.world.bounds.height - game.cache.getImage('pipe_end').height, 180 * numberOfPipes + 500, game.cache.getImage('pipe_end').height, 'pipe_end');
 		this.physics.enable(floor, Phaser.Physics.ARCADE);
 		floor.enableBody = true;
 		floor.body.immovable = true;
@@ -66,8 +70,8 @@ var gameState = {
 		floor.body.velocity.x = -150;
 
 	},
-	createFinishLine: function(){
-		finishLine = game.add.tileSprite(180*numberOfPipes + 500 , 0,game.cache.getImage('pipe_end').height,600,'pipe_end');
+	createFinishLine : function() {
+		finishLine = game.add.tileSprite(180 * numberOfPipes + 500, 0, game.cache.getImage('pipe_end').height, 600, 'pipe_end');
 		this.physics.enable(finishLine, Phaser.Physics.ARCADE);
 		finishLine.enableBody = true;
 		finishLine.body.immovable = true;
@@ -93,7 +97,7 @@ var gameState = {
 		}, 1000);
 
 	},
-	finishGame:function(){
+	finishGame : function() {
 		bird.body.velocity.x = 0;
 		bird.body.velocity.y = 0;
 		this.physics.arcade.gravity.y = 0;
@@ -107,8 +111,8 @@ var gameState = {
 			isGameOver = false;
 		}, 4000);
 	},
-	
-	hitCoin: function(b,c){
+
+	hitCoin : function(b, c) {
 		score.text = (parseInt(score.text) + 1);
 		c.kill();
 
@@ -118,11 +122,10 @@ var gameState = {
 		pipes = game.add.group();
 		pipes.enableBody = true;
 		pipes.physicsBodyType = Phaser.Physics.ARCADE;
-		
+
 		coins = game.add.group();
 		coins.enableBody = true;
 		coins.physicsBodyType = Phaser.Physics.ARCADE;
-		
 
 		for ( i = 0; i < numberOfPipes; i++) {
 			var height = Math.floor((Math.random() * 15 + 10));
@@ -158,18 +161,17 @@ var gameState = {
 		cap.body.immovable = true;
 		cap.body.allowGravity = false;
 		cap.body.velocity.x = -150;
-		
+
 		coin = coins.create(positionX, (height * 16) + 30);
 		coin.scale.x = 6;
 		coin.scale.y = 6;
-		
+
 		coin.body.mass = 0;
 		coin.body.immovable = false;
 		coin.body.checkCollision = false;
 		coin.body.allowGravity = false;
 		coin.body.velocity.x = -150;
-		
-		
+
 	}
 };
 
