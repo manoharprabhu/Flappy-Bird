@@ -24,7 +24,7 @@ var gameState = {
 		this.physics.enable(bird, Phaser.Physics.ARCADE);
 		bird.body.collideWorldBounds = true;
 		bird.body.drag.y = 450;
-		this.physics.arcade.gravity.y = 800;
+		this.physics.arcade.gravity.y = 1700;
 		this.createPipes();
 		this.createFloor();
 
@@ -33,7 +33,7 @@ var gameState = {
 		var key = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 		key.onDown.add(function(key) {
 			if (isGameOver == false) {
-				bird.body.velocity.y = -400;
+				bird.body.velocity.y = -500;
 				bird.loadTexture('bird_3', 0);
 				birdChangeTimer = setTimeout(function() {
 					bird.loadTexture('bird_2', 0);
@@ -100,7 +100,7 @@ var gameState = {
 
 		for ( i = 0; i < 50; i++) {
 			var height = Math.floor((Math.random() * 15 + 10));
-			this.createPipeSystemAt((i * 210) + 500, height);
+			this.createPipeSystemAt((i * 180) + 500, height);
 		}
 	},
 
